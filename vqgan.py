@@ -4,7 +4,7 @@ from encoder import Encoder
 from decoder import Decoder
 from codebook import Codebook
 
-class VQGAN(nn.modules):
+class VQGAN(nn.Module):
     def __init__(self, args):
         super().__init__()
         self.encoder = Encoder(args).to(device=args.device)
@@ -38,7 +38,7 @@ class VQGAN(nn.modules):
         last_layer = self.decoder.model[-1]
         last_layer_weight = last_layer.weight
         perceptual_loss_grads = torch.autograd.grad(perceptual_loss, last_layer_weight, retain_graph=True)[0]
-        gan_loss_grads = torch.autograd.gard(gan_loss, last_layer_weight, retain_graph=True)[0]
+        gan_loss_grads = torch.autograd.grad(gan_loss, last_layer_weight, retain_graph=True)[0]
         
         λ = torch.norm(perceptual_loss_grads) / (torch.norm(gan_loss_grads) + 1e-4)
         λ = torch.clamp(λ, 0, 1e4).detach()
